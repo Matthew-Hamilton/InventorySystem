@@ -29,6 +29,11 @@ public class Item : MonoBehaviour
             transform.position += new Vector3(mouseDelta.x, mouseDelta.y, 0);
 
             lastMousePosition = mousePosition;
+
+            foreach(GameObject space in spaces)
+            {
+                space.GetComponent<ItemSpace>().UpdateClosestSpace();
+            }
         }
     }
 

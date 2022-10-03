@@ -5,6 +5,7 @@ using UnityEngine;
 public class InventorySpace : MonoBehaviour
 {
     private bool isFilled = false;
+    public bool isHighlighted = false;
     public bool IsFilled
     {
         private set { isFilled = value; }
