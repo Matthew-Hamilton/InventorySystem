@@ -14,11 +14,97 @@ public class Item : MonoBehaviour
 
     private void Start()
     {
-        spaces = new List<GameObject>();
-        spaces.Add(Instantiate(itemSpace, new Vector3(0.64f, 0.64f) + transform.position, transform.rotation, transform));
-        spaces.Add(Instantiate(itemSpace, new Vector3(-.64f, 0.64f) + transform.position, transform.rotation, transform));
-        spaces.Add(Instantiate(itemSpace, new Vector3(-.64f, -0.64f) + transform.position, transform.rotation, transform));
+        //CreateRectangle(3);
     }
+
+    public void GenerateRandomShape()
+    {
+
+        spaces = new List<GameObject>();
+        int randomShape = Mathf.FloorToInt(Random.Range(0, 4));
+        int randomSize = Mathf.FloorToInt(Random.Range(1, 4));
+        switch ((itemShape)randomShape)
+        {
+            case itemShape.Line:
+                CreateLine(randomSize);
+                break;
+            case itemShape.Box:
+                CreateBox(randomSize);
+                break;
+            case itemShape.Diagonal:
+                CreateDiagonal(randomSize);
+                break;
+            case itemShape.Rectangle:
+                CreateRectangle(randomSize);
+                break;
+            default:
+                Debug.Log("Invalid Shape");
+                break;
+        }
+
+        foreach (GameObject space in spaces)
+            space.GetComponent<SpriteRenderer>().color = Color.black;
+    }
+
+    public Item(itemShape shape, int size, int height = 2)
+    {
+        switch(shape)
+        {
+            case itemShape.Line:
+
+                break;
+            case itemShape.Box:
+
+                break;
+            case itemShape.Diagonal:
+
+                break;
+            case itemShape.Rectangle:
+
+                break;
+            default:
+                Debug.Log("Invalid Shape");
+                break;
+        }
+
+        foreach (GameObject space in spaces)
+            space.GetComponent<SpriteRenderer>().color = Color.black;
+    }
+
+    void CreateLine(int size)
+    {
+
+        for(int i = 0; i < size; i++)
+        {
+            spaces.Add(Instantiate(itemSpace, new Vector3((i+0.5f)*1.28f - ((size*0.5f) * 1.28f), 0, 0) + transform.position, transform.rotation, transform));
+        }
+    }
+    void CreateDiagonal(int size)
+    {
+        for (int i = 0; i < size; i++)
+        {
+            spaces.Add(Instantiate(itemSpace, new Vector3((i + 0.5f) * 1.28f - ((size * 0.5f) * 1.28f), (i + 0.5f) * 1.28f - ((size * 0.5f) * 1.28f), 0) + transform.position, transform.rotation, transform));
+        }
+    }
+
+    void CreateBox(int size)
+    {
+        for (int i = 0; i < size; i++)
+        {
+            for(int j = 0; j < size; j++)
+            spaces.Add(Instantiate(itemSpace, new Vector3((i+0.5f) * 1.28f - ((size * 0.5f) * 1.28f), (j+0.5f) * 1.28f - ((size * 0.5f) * 1.28f), 0) + transform.position, transform.rotation, transform));
+        }
+    }
+    void CreateRectangle(int size, int height = 2)
+    {
+        for (int i = 0; i < height; i++)
+        {
+            for (int j = 0; j < size; j++)
+                spaces.Add(Instantiate(itemSpace, new Vector3((i + 0.5f) * 1.28f - ((height * 0.5f) * 1.28f), (j + 0.5f) * 1.28f - ((size * 0.5f) * 1.28f), 0) + transform.position, transform.rotation, transform));
+        }
+    }
+
+
 
     private void Update()
     {
@@ -85,15 +171,30 @@ public class Item : MonoBehaviour
         return false;
     }
 
-    void PlaceItem()
+    bool PlaceItem()
     {
+        List<ItemSpace> tempList = new List<ItemSpace>();
         foreach (GameObject space in spaces)
         {
+            if (space.GetComponent<ItemSpace>().highlighting.GetComponent<InventorySpace>().IsFilled)
+            {
+                UndoPlaceItem(tempList);
+                return false;
+            }
             space.GetComponent<ItemSpace>().highlighting.GetComponent<InventorySpace>().IsFilled = true;
+            tempList.Add(space.GetComponent<ItemSpace>());
         }
 
         transform.position -= spaces[0].transform.position - spaces[0].GetComponent<ItemSpace>().highlighting.transform.position;
         isPlaced = true;
+        return true;
+    }
+
+    void UndoPlaceItem(List<ItemSpace> toUndo)
+    {
+        foreach(ItemSpace space in toUndo)
+            space.highlighting.GetComponent<InventorySpace>().IsFilled = false;
+
     }
 
     void PickupItem()
@@ -103,6 +204,14 @@ public class Item : MonoBehaviour
             space.GetComponent<ItemSpace>().highlighting.GetComponent<InventorySpace>().IsFilled = false;
         }
         isPlaced=false;
+    }
+
+    public enum itemShape
+    {
+        Line,
+        Box,
+        Diagonal,
+        Rectangle
     }
 
 }

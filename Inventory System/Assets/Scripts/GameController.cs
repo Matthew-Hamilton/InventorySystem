@@ -21,7 +21,7 @@ public class GameController : MonoBehaviour
 
         if(Input.GetKeyDown(KeyCode.R))
         {
-            Instantiate(testItem);
+            Instantiate(testItem).GetComponent<Item>().GenerateRandomShape();
         }
     }
 }
