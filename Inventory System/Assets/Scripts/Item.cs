@@ -8,6 +8,7 @@ public class Item : MonoBehaviour
     [SerializeField] List<GameObject> spaces;
     Vector3 mousePosition;
     Vector3 lastMousePosition;
+    Color itemColour;
 
    [SerializeField] bool isDragging;
     bool isPlaced = false;
@@ -19,9 +20,9 @@ public class Item : MonoBehaviour
 
     public void GenerateRandomShape()
     {
-
+        itemColour = new Color(Random.value, Random.value, Random.value, 0.8f);
         spaces = new List<GameObject>();
-        int randomShape = Mathf.FloorToInt(Random.Range(0, 4));
+        int randomShape = Mathf.FloorToInt(Random.Range(0, 5));
         int randomSize = Mathf.FloorToInt(Random.Range(1, 4));
         switch ((itemShape)randomShape)
         {
@@ -37,13 +38,16 @@ public class Item : MonoBehaviour
             case itemShape.Rectangle:
                 CreateRectangle(randomSize);
                 break;
+            case itemShape.L:
+                CreateL(randomSize);
+                break;
             default:
                 Debug.Log("Invalid Shape");
                 break;
         }
 
         foreach (GameObject space in spaces)
-            space.GetComponent<SpriteRenderer>().color = Color.black;
+            space.GetComponent<SpriteRenderer>().color = itemColour;
     }
 
     public Item(itemShape shape, int size, int height = 2)
@@ -73,7 +77,7 @@ public class Item : MonoBehaviour
 
     void CreateLine(int size)
     {
-
+        size++;
         for(int i = 0; i < size; i++)
         {
             spaces.Add(Instantiate(itemSpace, new Vector3((i+0.5f)*1.28f - ((size*0.5f) * 1.28f), 0, 0) + transform.position, transform.rotation, transform));
@@ -81,6 +85,7 @@ public class Item : MonoBehaviour
     }
     void CreateDiagonal(int size)
     {
+        size++;
         for (int i = 0; i < size; i++)
         {
             spaces.Add(Instantiate(itemSpace, new Vector3((i + 0.5f) * 1.28f - ((size * 0.5f) * 1.28f), (i + 0.5f) * 1.28f - ((size * 0.5f) * 1.28f), 0) + transform.position, transform.rotation, transform));
@@ -101,6 +106,18 @@ public class Item : MonoBehaviour
         {
             for (int j = 0; j < size; j++)
                 spaces.Add(Instantiate(itemSpace, new Vector3((i + 0.5f) * 1.28f - ((height * 0.5f) * 1.28f), (j + 0.5f) * 1.28f - ((size * 0.5f) * 1.28f), 0) + transform.position, transform.rotation, transform));
+        }
+    }
+    void CreateL(int size)
+    {
+        size++;
+        for(int i = 0; i < size; i++)
+        {
+            for(int j = 0; j < size; j++)
+            {
+                if(i ==0 || j == 0)
+                    spaces.Add(Instantiate(itemSpace, new Vector3((i + 0.5f) * 1.28f - ((size * 0.5f) * 1.28f), (j + 0.5f) * 1.28f - ((size * 0.5f) * 1.28f), 0) + transform.position, transform.rotation, transform));
+            }
         }
     }
 
@@ -211,7 +228,8 @@ public class Item : MonoBehaviour
         Line,
         Box,
         Diagonal,
-        Rectangle
+        Rectangle,
+        L
     }
 
 }
