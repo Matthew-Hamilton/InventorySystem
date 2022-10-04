@@ -10,6 +10,7 @@ public class Item : MonoBehaviour
     Vector3 lastMousePosition;
 
    [SerializeField] bool isDragging;
+    bool isPlaced = false;
 
     private void Start()
     {
@@ -34,6 +35,21 @@ public class Item : MonoBehaviour
             {
                 space.GetComponent<ItemSpace>().UpdateClosestSpace();
             }
+
+            foreach (GameObject space in spaces)
+            {
+                if(space.GetComponent<ItemSpace>().highlighting != null)
+                    space.GetComponent<ItemSpace>().highlighting.GetComponent<SpriteRenderer>().color = Color.red;
+            }
+
+            if(Input.GetKeyDown(KeyCode.Q))
+            {
+                transform.RotateAround(transform.position, Vector3.forward, 90);
+            }
+            if (Input.GetKeyDown(KeyCode.E))
+            {
+                transform.RotateAround(transform.position, Vector3.forward, -90);
+            }
         }
     }
 
@@ -41,6 +57,8 @@ public class Item : MonoBehaviour
     {
        lastMousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         isDragging = true;
+        if(isPlaced)
+            PickupItem();
         Debug.Log("Item Clicked");
        
     }
@@ -48,5 +66,43 @@ public class Item : MonoBehaviour
     public void OnMouseUp()
     {
         isDragging=false;
+        if (CanPlaceItem())
+            PlaceItem();
+        
     }
+
+    bool CanPlaceItem()
+    {
+        Debug.Log("CanPlaceCalled");
+        int numCanPlace = 0;
+        foreach (GameObject space in spaces)
+        {
+            if (space.GetComponent<ItemSpace>().highlighting != null && !space.GetComponent<ItemSpace>().highlighting.GetComponent<InventorySpace>().IsFilled)
+                numCanPlace++;
+        }
+        if(numCanPlace == spaces.Count)
+            return true;
+        return false;
+    }
+
+    void PlaceItem()
+    {
+        foreach (GameObject space in spaces)
+        {
+            space.GetComponent<ItemSpace>().highlighting.GetComponent<InventorySpace>().IsFilled = true;
+        }
+
+        transform.position -= spaces[0].transform.position - spaces[0].GetComponent<ItemSpace>().highlighting.transform.position;
+        isPlaced = true;
+    }
+
+    void PickupItem()
+    {
+        foreach (GameObject space in spaces)
+        {
+            space.GetComponent<ItemSpace>().highlighting.GetComponent<InventorySpace>().IsFilled = false;
+        }
+        isPlaced=false;
+    }
+
 }

@@ -4,11 +4,17 @@ using UnityEngine;
 
 public class InventorySpace : MonoBehaviour
 {
-    private bool isFilled = false;
-    public bool isHighlighted = false;
+    private Vector2 inventoryPosition;
+    public Vector2 InventoryPosition
+    {
+        get { return inventoryPosition; }
+        set { inventoryPosition = value; }
+    }
+    //Used by Item/ItemSpace to check whether an item can be placed in this slot
+    [SerializeField]private bool isFilled = false;
     public bool IsFilled
     {
-        private set { isFilled = value; }
+        set { isFilled = value; }
         get { return isFilled; }
     }
     SpriteRenderer spriteRenderer;
@@ -22,23 +28,5 @@ public class InventorySpace : MonoBehaviour
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         spriteRenderer.color = color;
-    }
-
-    public void SetAdjacentSpace(Direction dir, InventorySpace newAdjacent)
-    {
-       // adjacentSpaces[(int)dir] = newAdjacent;
-    }
-
-    public void SetPosition(float x, float y, float z)
-    {
-
-    }
-
-    public enum Direction
-    { 
-        Up,
-        Right,
-        Down,
-        Left
     }
 }

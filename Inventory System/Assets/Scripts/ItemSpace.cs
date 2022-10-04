@@ -6,7 +6,7 @@ public class ItemSpace : MonoBehaviour
 {
 
     [SerializeField] bool canPlace = false;
-    GameObject highlighting = null;
+    public GameObject highlighting = null;
     float closestCollider;
     [SerializeField]List<Collider2D> colliders;
 
@@ -24,7 +24,7 @@ public class ItemSpace : MonoBehaviour
         closestCollider = float.MaxValue;
         foreach(Collider2D collider in colliders)
         {
-            if((collider.transform.position - transform.position).magnitude < closestCollider && (collider.transform.position - transform.position).magnitude < 0.4f)
+            if((collider.transform.position - transform.position).magnitude < closestCollider/* && (collider.transform.position - transform.position).magnitude < 0.4f*/)
             {
                 temp = collider.gameObject;
                 closestCollider = (collider.transform.position - transform.position).magnitude;
@@ -32,7 +32,8 @@ public class ItemSpace : MonoBehaviour
         }
         if (temp == highlighting)
             return;
-        HighlightSlot(temp);
+        UnHighlightSlot();
+        highlighting = temp;
     }
 
     void HighlightSlot(GameObject toHighlight)
@@ -40,6 +41,12 @@ public class ItemSpace : MonoBehaviour
         highlighting.GetComponent<SpriteRenderer>().color = Color.white;
         toHighlight.GetComponent<SpriteRenderer>().color = Color.red;
         highlighting = toHighlight;
+    }
+
+    void UnHighlightSlot()
+    {
+        highlighting.GetComponent<SpriteRenderer>().color = Color.white;
+        highlighting = null;
     }
 
 
@@ -70,6 +77,8 @@ public class ItemSpace : MonoBehaviour
     {
         if (other.CompareTag("InventorySpace"))
         {
+            if (colliders.Count == 1)
+                UnHighlightSlot();
             colliders.Remove(other);
             //other.GetComponent<InventorySpace>().SetColour(Color.white);
 
